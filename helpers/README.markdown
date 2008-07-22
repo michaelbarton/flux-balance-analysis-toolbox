@@ -5,3 +5,7 @@ Sets the specific reaction to have a flux of -1, sets all other fluxes to have a
 ### fixGrowthOptimiseUptake.m
 
 Simulates nutrient limitation, but with a fixed biomass and instead maximises flux through the specified reaction. All the exhange reactions are set to -1000. The biomass reaction is set to the specified value, or the default of 0.05. The model objective function is then changed to the specified reaction (rxnShort). The objective function is maximised, but since exchange reactions are in the negative direction, this is equivalent to minimising the exchange flux.
+
+### calculateReactionSensitivity.m
+
+Estimates the sensitivity of the reaction in the provided model. Determines the optimal flux for the given reaction, in the given conditions, then fixes this reaction at that optimal flux. The sensitivity is then determined by decreasing the flux through this reaction, in small increments, and then determining the slope with model objective function.
