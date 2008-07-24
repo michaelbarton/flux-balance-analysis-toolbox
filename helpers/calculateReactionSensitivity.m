@@ -3,7 +3,7 @@ function [relative,absolute] = calculateReactionSensitivity(model,controlRxn)
   solution = optimizeCbModel(model);
 
   reactionFlux  = solution.x(reaction_number);
-  objectiveFlux = solution.f
+  objectiveFlux = solution.f;
 
   if reactionFlux == 0
     relative = 0;
@@ -15,9 +15,9 @@ function [relative,absolute] = calculateReactionSensitivity(model,controlRxn)
     peturbedSolution = optimizeCbModel(peturbedModel);
     peturbedObjectiveFlux = peturbedSolution.f;
 
-    dObj = objectiveFlux = peturbedObjectiveFlux - objectiveFlux;
-    dReaction = reactionFlux - peturbedReactionFlux
+    dObj = objectiveFlux - peturbedObjectiveFlux;
+    dReaction = reactionFlux - peturbedReactionFlux;
 
-    relative = dObj / dReaction
+    relative = dObj / dReaction;
     absolute = relative * (100 / reactionFlux);
   end
