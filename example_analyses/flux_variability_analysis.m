@@ -5,7 +5,6 @@ genes = [];
 reaction_names =[];
 relative_costs = [];
 absolute_costs = [];
-r_squares = [];
 environments =[];
 
 exchanges = {'EX_glc(e)','EX_nh4(e)','EX_o2(e)','EX_pi(e)','EX_so4(e)'};
@@ -18,7 +17,7 @@ for e = 1:length(exchanges)
 
   model = fixGrowthOptimiseUptake(originalModel,biomassReaction,exchange,biomassFix);
 
-  for g = 1:length(model.genes)
+  for g = 1:length(model.genes(1:5))
 
     % All the reactions catalysed by the gene
     reactions = model.rxns(find(model.rxnGeneMat(:,g)));
@@ -28,7 +27,7 @@ for e = 1:length(exchanges)
       % Find the optimal flux for this reaction
       reaction = reactions(r);
 
-      [relative,absolute,r] = calculateReactionSensitivity(model,reaction);
+      [relative,absolute] = calculateReactionSensitivity(model,reaction);
 
       genes = [genes model.genes(g)];
       reaction_names = [reaction_names reaction];
@@ -36,7 +35,6 @@ for e = 1:length(exchanges)
       
       relative_costs = [relative_costs relative];
       absolute_costs = [absolute_costs absolute];
-      r_squares = [r_squares r];
 
     end
   end
@@ -44,5 +42,5 @@ end
 
 % Print out reaction data
 file = 'reaction_fluxes.txt';
-header = {'gene','reaction','environment','relative','absolute','r_square'};
-printLabeledData([genes',reaction_names',environments'],[relative_costs',absolute_costs',r_squares'],false,false,file,header);
+header = {'gene','reaction','environment','relative','absolute'};
+printLabeledData([genes',reaction_names',environments'],[relative_costs',absolute_costs'],false,false,file,header);
