@@ -1,3 +1,7 @@
+### setup.example.m
+
+An example of a file to set common parameters for using the COBRA toolbox.
+
 ### setLimitingExchange.m
 
 Sets the specific reaction to have a lower boundary flux of -1, sets all other exchange fluxes to have a lower reaction boundary flux of -1000. This effectively sets the specified reaction to be the limiting.
