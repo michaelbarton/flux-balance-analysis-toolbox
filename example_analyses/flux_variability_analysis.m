@@ -17,7 +17,7 @@ for e = 1:length(exchanges)
 
   model = fixGrowthOptimiseUptake(originalModel,biomassReaction,exchange,biomassFix);
 
-  for g = 1:length(model.genes(1:5))
+  for g = 1:length(model.genes)
 
     % All the reactions catalysed by the gene
     reactions = model.rxns(find(model.rxnGeneMat(:,g)));
