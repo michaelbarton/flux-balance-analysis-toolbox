@@ -13,3 +13,7 @@ Simulates nutrient limitation, but with a fixed biomass and instead maximises fl
 ### calculateReactionSensitivity.m
 
 Estimates the sensitivity of the reaction in the provided model, given the objective function. Determines the optimal flux for the given reaction by optimising the model. The flux through the reaction is then set at 99.9% of it's optimal value, and the model optimised again. The change in objective reaction flux versus change in control reaction flux (dO/dR) is then calculated as the relative sensitivity of the reaction flux. The relative reaction sensitivity is then rescaled by the optimal control reaction flux to produce an estimate of reaction sensitivity on objective flux given an absolute changes in flux. 
+
+### calculateBiomassComponentSensitivity.m
+
+Estimates the sensitivity of a biomass reaction component on the model objective function. The method alters the stoichiometry of the biomass component by +/- 0.0002% in steps of 0.0001%, and at each stage estimates the resulting effect on the model objective function. A linear curve is then fitted between the percentage change in stoichiometry, and the corresponding effect on objective flux. The slope of this curve is taken as the relative sensitivity of that biomass component. An absolute sensitivity is then calculated from dividing the relative sensitivity by the original stoichiometry of the given component in biomass.
