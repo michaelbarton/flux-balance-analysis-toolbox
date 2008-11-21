@@ -7,7 +7,7 @@ function updated_model = fixGrowthOptimiseUptake(model,biomassShort,rxnShort,bio
   % Set all exchange reactions to -1000
   [selExc,selUptake] = findExcRxns(model,false,false);
   exchanges = find(selUptake);
-  temp = changeRxnBounds(model, model.rxns(exchanges), -1000, 'l');
+  temp = changeRxnBounds(model, model.rxns(exchanges), -100000, 'l');
 
   % Fix the biomass growth rate at the specified rate
   temp = changeRxnBounds(temp,biomassShort,biomassFix,'b');
