@@ -8,7 +8,7 @@ amino_acids = { 'ala-L[c]'  , 'arg-L[c]' , 'asn-L[c]' , 'asp-L[c]' , 'cys-L[c]' 
 exchanges = {'EX_glc(e)','EX_nh4(e)','EX_pi(e)','EX_so4(e)'};
 
 % A range of fluxes to fix the biomass at
-fixes = [ 0.05, 0.5, 5 ];
+fixes = [ 0.1, 0.2, 0.3 ];
 
 % Name of the biomass reaction in yeast
 biomassReaction = 'biomass_SC4_bal';
