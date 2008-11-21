@@ -46,4 +46,4 @@ function relative_cost = calculateRelativeCost(change,growth)
 function absolute_cost = calculateAbsoluteCost(rel_cost,metabolite_requirement)
   % Multiply by -1 again because components used in the biomass
   % have a negative sign
-  absolute_cost = rel_cost * (100 / metabolite_requirement) * -1;
+  absolute_cost = rel_cost / metabolite_requirement * -1;
