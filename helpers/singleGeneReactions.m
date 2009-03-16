@@ -27,4 +27,4 @@ function reactions = singleGeneReactions(model)
     end
   end
 
-  reactions = [singleAssociations.reaction]'
+  reactions = [singleAssociations.reaction]';
