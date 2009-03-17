@@ -3,7 +3,7 @@ format long
 addpath('helpers');setup;
 model = yeastModel();
 
-exchanges       = {'EX_nh4(e)','EX_glc(e)'};
+exchanges       = {'EX_nh4(e)','EX_glc(e)','EX_so4(e)'};
 
 biomassFix      = 0.3;
 biomassReaction = 'biomass_SC4_bal';
@@ -28,6 +28,7 @@ for e = 1:length(exchanges)
     results(row).gene              = model.genes(find(model.rxnGeneMat(reaction,:)));
     results(row).reaction          = reaction;
     results(row).environment       = exchange;
+    results(row).flux              = solution.x(reaction);
 
     %Skip this reaction if not used
     if solution.x(reaction) == 0
@@ -63,6 +64,6 @@ for e = 1:length(exchanges)
 end
 
 % Print out reaction data
-file = 'gene_reaction_type.txt';
+file = 'results/gene_reaction_type.txt';
 header = {'gene','environment','type','reaction'};
-printLabeledData([[results.gene]',[results.environment]',[results.type]'],[[results.reaction]'],false,-1,file,header);
+printLabeledData([[results.gene]',[results.environment]',[results.type]'],[[results.reaction]',[results.flux]'],false,-1,file,header);
