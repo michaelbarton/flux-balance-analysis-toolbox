@@ -1,46 +1,53 @@
+format long
+
 addpath('helpers');setup;
-originalModel = readCbModel('models/Sc_iND750_GlcMM.xml');
+model = yeastModel();
 
-genes = [];
-reaction_names =[];
-relative_costs = [];
-absolute_costs = [];
-environments =[];
+exchanges       = {'EX_nh4(e)','EX_glc(e)','EX_so4(e)'};
+reactions       = singleGeneReactions(model);
 
-exchanges = {'EX_glc(e)','EX_nh4(e)','EX_o2(e)','EX_pi(e)','EX_so4(e)'};
-
-biomassFix = 0.1;
+biomassFix      = 0.3;
 biomassReaction = 'biomass_SC4_bal';
+
+change = [0.97:0.01:1.00];
+
+results = struct;
+row = 0;
 
 for e = 1:length(exchanges)
   exchange = exchanges(e);
+  uptakeModel = fixGrowthOptimiseUptake(model,biomassReaction,exchange,biomassFix);
 
-  model = fixGrowthOptimiseUptake(originalModel,biomassReaction,exchange,biomassFix);
+  variableReactions = findVariableReactions(uptakeModel,reactions);
 
-  for g = 1:length(model.genes)
+  solution = optimizeCbModel(uptakeModel);
 
-    % All the reactions catalysed by the gene
-    reactions = model.rxns(find(model.rxnGeneMat(:,g)));
+  for r = 1:length(variableReactions)
+    reaction = variableReactions(r);
 
-    for r = 1:length(reactions)
+    uptake  = change;
+    control = change;
+    for c = 1:length(change)
+      flux = solution.x(reaction);
+      temp = changeRxnBounds(uptakeModel, model.rxns(reaction), flux * change(c), 'b');
 
-      % Find the optimal flux for this reaction
-      reaction = reactions(r);
-
-      [relative,absolute] = calculateReactionSensitivity(model,reaction);
-
-      genes = [genes model.genes(g)];
-      reaction_names = [reaction_names reaction];
-      environments = [environments exchange];
-      
-      relative_costs = [relative_costs relative];
-      absolute_costs = [absolute_costs absolute];
-
+      [peturbed,wild] = linearMOMA(uptakeModel,temp,'max');
+      uptake(c)  = peturbed.f;
+      control(c) = flux * change(c);
     end
+
+    regression = polyfit(control,uptake,1);
+    effect = regression(1) * -1;
+
+    row = row + 1;
+    results(row).gene     = model.genes(find(model.rxnGeneMat(reaction,:)));
+    results(row).exchange = exchange;
+    results(row).effect   = effect;
+
   end
+
 end
 
-% Print out reaction data
-file = 'reaction_fluxes.txt';
-header = {'gene','reaction','environment','relative','absolute'};
-printLabeledData([genes',reaction_names',environments'],[relative_costs',absolute_costs'],false,false,file,header);
+file = 'results/gene_sensitivity.txt';
+header = {'gene','environment','sensitivity'};
+printLabeledData([[results.gene]',[results.exchange]'],[results.effect]',false,-1,file,header);
