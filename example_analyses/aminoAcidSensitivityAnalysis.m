@@ -13,15 +13,11 @@ fixes = [ 0.1, 0.2, 0.3 ];
 % Name of the biomass reaction in yeast
 biomassReaction = 'biomass_SC4_bal';
 
-% Vectors to store results
-amino_acid_names = [];
-exchange_names = [];
-fix_values = [];
-absolute_costs = [];
-relative_costs = [];
-
+% Struct to store results
+results = struct;
 
 % Iterate over the range of biomass fixes
+row = 0;
 for f = 1:length(fixes)
   fix = fixes(f);
 
@@ -40,11 +36,12 @@ for f = 1:length(fixes)
       [relative,absolute] = calculateBiomassComponentSensitivity(temp_model,amino_acid,biomassReaction);
 
       % Store the results
-      amino_acid_names = [amino_acid_names amino_acid];
-      exchange_names = [exchange_names exchange];
-      fix_values = [fix_values fix];
-      absolute_costs = [absolute_costs absolute];
-      relative_costs = [relative_costs relative];
+      row = row + 1;
+      results(row).amino_acid_names = amino_acid;
+      results(row).exchange_names   = exchange;
+      results(row).fix_values       = fix;
+      results(row).absolute_costs   = absolute;
+      results(row).relative_costs   = relative;
 
     end
   end
@@ -53,4 +50,4 @@ end
 % Print out results
 file = 'yeast_amino_acid_costs.txt';
 header = {'amino_acid','exchange','fix','relative','absolute'};
-printLabeledData([amino_acid_names',exchange_names'],[fix_values',relative_costs',absolute_costs'],false,false,file,header);
+printLabeledData([[results.amino_acid_names]',[results.exchange_names]'],[[results.fix_values]',[results.relative_costs]',[results.absolute_costs]'],false,-1,file,header);
