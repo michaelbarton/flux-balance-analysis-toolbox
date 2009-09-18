@@ -1,5 +1,5 @@
 addpath('helpers');setup;
-originalModel = readCbModel('models/Sc_iND750_GlcMM.xml');
+originalModel = yeastModel();
 
 % Each of the amino acids to estimate the cost for
 amino_acids = { 'ala-L[c]'  , 'arg-L[c]' , 'asn-L[c]' , 'asp-L[c]' , 'cys-L[c]' , 'gln-L[c]' , 'glu-L[c]' , 'gly[c]' , 'his-L[c]' , 'ile-L[c]' , 'leu-L[c]' , 'lys-L[c]' , 'met-L[c]' , 'phe-L[c]' , 'pro-L[c]' , 'ser-L[c]' , 'thr-L[c]' , 'trp-L[c]' , 'tyr-L[c]' , 'val-L[c]' };
