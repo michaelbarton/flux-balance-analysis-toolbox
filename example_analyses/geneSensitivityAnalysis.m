@@ -16,33 +16,46 @@ row = 0;
 
 for e = 1:length(exchanges)
   exchange = exchanges(e);
-  uptakeModel = fixGrowthOptimiseUptake(model,biomassReaction,exchange,biomassFix);
 
-  variableReactions = findVariableReactions(uptakeModel,reactions);
+  setups = struct;
 
-  solution = optimizeCbModel(uptakeModel);
+  setups(1).model    = fixGrowthOptimiseUptake(model,biomassReaction,exchange,biomassFix);
+  setups(1).solution = optimizeCbModel(setups(1).model);
+  setups(1).name     = {'optimal'};
 
-  for r = 1:length(variableReactions)
-    reaction = variableReactions(r);
+  % Increase nutrient uptake by 5% to create suboptimal solution
+  setups(2).model    =  changeRxnBounds(setups(1).model,exchange,setups(1).solution.f * 1.05,'u');
+  setups(2).solution = optimizeCbModel(setups(2).model);
+  setups(2).name     = {'suboptimal'};
 
-    uptake  = change;
-    control = change;
-    for c = 1:length(change)
-      flux = solution.x(reaction);
-      temp = changeRxnBounds(uptakeModel, model.rxns(reaction), flux * change(c), 'b');
+  for s = 1:length(setups)
+    setup = setups(s);
 
-      [peturbed,wild] = linearMOMA(uptakeModel,temp,'max');
-      uptake(c)  = peturbed.f;
-      control(c) = flux * change(c);
+    variableReactions = findVariableReactions(setup.model,reactions);
+
+    for r = 1:length(variableReactions)
+      reaction = variableReactions(r);
+
+      uptake  = change;
+      control = change;
+      for c = 1:length(change)
+        flux = setup.solution.x(reaction);
+        temp = changeRxnBounds(setup.model, model.rxns(reaction), flux * change(c), 'b');
+
+        [peturbed,wild] = linearMOMA(setup.model,temp,'max');
+        uptake(c)  = peturbed.f;
+        control(c) = flux * change(c);
+      end
+
+      regression = polyfit(control,uptake,1);
+      effect = regression(1) * -1;
+
+      row = row + 1;
+      results(row).gene     = model.genes(find(model.rxnGeneMat(reaction,:)));
+      results(row).exchange = exchange;
+      results(row).effect   = effect;
+      results(row).setup    = setup.name;
     end
-
-    regression = polyfit(control,uptake,1);
-    effect = regression(1) * -1;
-
-    row = row + 1;
-    results(row).gene     = model.genes(find(model.rxnGeneMat(reaction,:)));
-    results(row).exchange = exchange;
-    results(row).effect   = effect;
 
   end
 
@@ -50,4 +63,4 @@ end
 
 file = 'results/gene_sensitivity.txt';
 header = {'gene','environment','sensitivity'};
-printLabeledData([[results.gene]',[results.exchange]'],[results.effect]',false,-1,file,header);
+printLabeledData([[results.gene]',[results.exchange]',[results.setup]'],[results.effect]',false,-1,file,header);
