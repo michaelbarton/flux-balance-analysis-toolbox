@@ -5,7 +5,7 @@ originalModel = yeastModel();
 amino_acids = { 'ala-L[c]'  , 'arg-L[c]' , 'asn-L[c]' , 'asp-L[c]' , 'cys-L[c]' , 'gln-L[c]' , 'glu-L[c]' , 'gly[c]' , 'his-L[c]' , 'ile-L[c]' , 'leu-L[c]' , 'lys-L[c]' , 'met-L[c]' , 'phe-L[c]' , 'pro-L[c]' , 'ser-L[c]' , 'thr-L[c]' , 'trp-L[c]' , 'tyr-L[c]' , 'val-L[c]' };
 
 % Each of the simulated nutrient limited environments
-exchanges = {'EX_glc(e)','EX_nh4(e)','EX_pi(e)','EX_so4(e)'};
+exchanges = {'EX_glc(e)','EX_nh4(e)','EX_so4(e)'};
 
 % A range of fluxes to fix the biomass at
 fixes = [ 0.1, 0.2, 0.3 ];
