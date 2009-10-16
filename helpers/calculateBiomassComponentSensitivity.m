@@ -6,44 +6,33 @@ function [relative,absolute] = calculateBiomassComponentSensitivity(model,compon
   % Find the row number for the given biomass component
   componentS = find(ismember(model.mets,component));
 
-  % The range of changes for the amino acid stoichiometry
-  % plus/minus 0.0002% change
-  change = [0.9998:0.0001:1.0002];
+  change      = [0.9998:0.0001:1.0002];
+  relChange   = model.S(componentS,biomassRxn) * change;
+  relResponse = estimateResponse(model,componentS,biomassRxn,relChange);
+  regression  = polyfit((change),(relResponse),1);
+  relative    = regression(1) * -1;
 
-  % Vector for resulting changes in objective function
-  response = change;
+  change      = [-0.00002:0.00001:0.00002];
+  absChange   = model.S(componentS,biomassRxn) + change;
+  absResponse = estimateResponse(model,componentS,biomassRxn,absChange);
+  regression  = polyfit(absChange,absResponse,1);
+  absolute    = regression(1);
 
-  for j=1:length(change)
 
-    % Create temporary model to modify for each loop iteration
+
+function responses = estimateResponse(model,componentS,biomassRxn,changes)
+  responses = changes;
+  for i=1:length(changes)
+
+    % Temporary model for each loop iteration
     temp_model = model;
 
-    % Update the temporary model by modifying the coefficient of the 
-    % component in the biomass reaction by the the given change
-    temp_model.S(componentS,biomassRxn) = model.S(componentS,biomassRxn) * (change(j));
+    % Update the temporary model by changing the coefficient of the 
+    % component in the biomass reaction to the changed value
+    temp_model.S(componentS,biomassRxn) = changes(i);
 
     % Find the optimum of the model, based on the model objective function 
-    solution = optimizeCbModel(temp_model, 'max',false,false);
-
-    % Find the current flux for the model objective reaction
-    response(j) = solution.f;
+    solution = optimizeCbModel(temp_model,'max',false,false);
+    responses(i) = solution.f;
 
   end
-
-  % Relative cost is the slope between the two variables
-  relative = calculateRelativeCost(change,response);
-
-  % Absolute cost is the relative cost multiplied 
-  % by the stoichiometry of the component in biomass
-  absolute = calculateAbsoluteCost(relative,model.S(componentS,biomassRxn));
-
-function relative_cost = calculateRelativeCost(change,growth)
-  regression = polyfit(change,growth,1);
-
-  % Multiply by -1 because the more negative the slope the greater the cost
-  relative_cost = regression(1) * -1;
-
-function absolute_cost = calculateAbsoluteCost(rel_cost,metabolite_requirement)
-  % Multiply by -1 again because components used in the biomass
-  % have a negative sign
-  absolute_cost = rel_cost / metabolite_requirement * -1;
