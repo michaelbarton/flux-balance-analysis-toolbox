@@ -9,8 +9,8 @@ function [relative,absolute] = calculateBiomassComponentSensitivity(model,compon
   change      = [0.9998:0.0001:1.0002];
   relChange   = model.S(componentS,biomassRxn) * change;
   relResponse = estimateResponse(model,componentS,biomassRxn,relChange);
-  regression  = polyfit((change),(relResponse),1);
-  relative    = regression(1) * -1;
+  regression  = polyfit(log(change),log(relResponse * -1),1);
+  relative    = regression(1);
 
   change      = [-0.00002:0.00001:0.00002];
   absChange   = model.S(componentS,biomassRxn) + change;
