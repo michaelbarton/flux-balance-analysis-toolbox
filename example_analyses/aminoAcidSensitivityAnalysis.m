@@ -48,6 +48,6 @@ for f = 1:length(fixes)
 end
 
 % Print out results
-file = 'yeast_amino_acid_costs.txt';
+file = 'results/yeast_amino_acid_costs.txt';
 header = {'amino_acid','exchange','fix','relative','absolute'};
 printLabeledData([[results.amino_acid_names]',[results.exchange_names]'],[[results.fix_values]',[results.relative_costs]',[results.absolute_costs]'],false,-1,file,header);
